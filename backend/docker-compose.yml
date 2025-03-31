@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: photo_album
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # Windows-specific optimizations
+    platform: linux/amd64  # Ensures compatibility on Windows
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: photo_album
+      NODE_ENV: development
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules  # Prevents host node_modules from overwriting container's
+    # Windows-specific optimizations
+    platform: linux/amd64
+    restart: unless-stopped
+    stdin_open: true  # Helps with debugging
+    tty: true        # Helps with debugging
+
+volumes:
+  postgres_data:
+    driver: local
+    # Windows-specific volume optimization
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/.postgres-data
