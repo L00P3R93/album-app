@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:13
+    image: postgres:13-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -16,13 +14,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    # Windows-specific optimizations
-    platform: linux/amd64  # Ensures compatibility on Windows
-    restart: unless-stopped
 
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
@@ -35,15 +30,9 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: photo_album
-      NODE_ENV: development
     volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules  # Prevents host node_modules from overwriting container's
-    # Windows-specific optimizations
-    platform: linux/amd64
-    restart: unless-stopped
-    stdin_open: true  # Helps with debugging
-    tty: true        # Helps with debugging
+      - ./dist:/usr/src/app/dist
+      - ./node_modules:/usr/src/app/node_modules
 
 volumes:
   postgres_data:
@@ -52,4 +41,4 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/.postgres-data
+      device: .postgres-data

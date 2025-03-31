@@ -4,17 +4,17 @@ import { Album } from './Album';
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
-    id: number | undefined;
+    id!: number;
 
-    @Column()
-    name: string | undefined;
+    @Column('varchar', { length: 255 })
+    name!: string;
 
-    @Column({ unique: true })
-    username: string | undefined;
+    @Column('varchar', { length: 50, unique: true })
+    username!: string;
 
-    @Column({ unique: true })
-    email: string | undefined;
+    @Column('varchar', { length: 100, unique: true })
+    email!: string;
 
     @OneToMany(() => Album, (album) => album.user)
-    albums: Album[] | undefined;
+    albums!: Album[];
 }

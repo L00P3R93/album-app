@@ -1,20 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Album } from "./Album";
 
 @Entity()
 export class Photo {
     @PrimaryGeneratedColumn()
-    id: number | undefined;
+    id!: number;
 
-    @Column()
-    title: string | undefined;
+    @Column('varchar', { length: 255 })
+    title!: string;
 
-    @Column()
-    url: string | undefined;
+    @Column('text')
+    url!: string;
 
     @ManyToOne(() => Album, (album) => album.photos)
-    album: Album | undefined;
+    @JoinColumn({ name: 'albumId' })
+    album!: Album;
 
-    @Column()
-    albumId: number | undefined
+    @Column('integer')
+    albumId!: number
 }

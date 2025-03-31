@@ -4,6 +4,12 @@
   "description": "Backend for the photo album app",
   "main": "src/server.ts",
   "scripts": {
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "dev": "nodemon src/server.ts",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Vincent Kioko",
@@ -17,11 +23,10 @@
     "typeorm": "^0.3.21"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.6.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
-    "@types/faker": "^6.6.8",
     "@types/node": "^22.13.14",
-    "faker": "^6.6.6",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"

@@ -1,18 +1,22 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { Photo } from './Photo';
 
 @Entity()
 export class Album {
     @PrimaryGeneratedColumn()
-    id: number | undefined;
+    id!: number;
 
-    @Column()
-    title: string | undefined;
+    @Column('varchar', { length: 255 })
+    title!: string;
 
     @ManyToOne(() => User, (user) => user.albums)
-    user: User | undefined;
+    @JoinColumn({ name: 'userId' })
+    user!: User;
 
-    @OneToMany(() => Photo, (photo) => photo.album)
-    photos: Photo[] | undefined;
+    @Column('integer')
+    userId!: number;
+
+    @OneToMany(() => Photo, (photo) => photo.album, { cascade: true })
+    photos!: Photo[];
 }
