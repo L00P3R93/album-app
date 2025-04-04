@@ -11,11 +11,11 @@ export class Album {
     title!: string;
 
     @ManyToOne(() => User, (user) => user.albums)
-    @JoinColumn({ name: 'userId' })
+    @JoinColumn({ name: 'user_id' })
     user!: User;
 
     @Column('integer')
-    userId!: number;
+    user_id!: number;
 
     @OneToMany(() => Photo, (photo) => photo.album, { cascade: true })
     photos!: Photo[];

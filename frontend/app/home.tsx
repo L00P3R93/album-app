@@ -5,13 +5,7 @@ import { fetchUsers } from "@/app/services/userService";
 import { useAuth } from "@/app/context/AuthContext";
 import Card from "@/app/components/Card";
 
-interface User {
-    id: string;
-    name: string;
-    email: string;
-    username: string;
-    albums: [];
-}
+import { User } from "@/app/types"
 
 const HomePage = () => {
     // @ts-ignore
@@ -26,14 +20,14 @@ const HomePage = () => {
     return (
        <>
            <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-               {user ? (users.map((user) => (
+               {user ? (users.map((user: User) => (
                    <Card
                        key={user.id}
                        title={user.name}
-                       description={`Albums: 5`}
+                       description={`Albums: ${user.albums.length}`}
                        onClick={() => router.push(`/user/${user.id}`)}
                        showButton={true}
+                       imageUrl=""
                    />
                ))):(" Login Please")}
            </div>

@@ -6,7 +6,6 @@ import {AppDataSource} from "./data-source";
 import {Photo} from "./entities/Photo";
 import {User} from "./entities/User";
 import {Album} from "./entities/Album";
-
 import { faker } from '@faker-js/faker';
 
 const app = express();
@@ -25,48 +24,74 @@ AppDataSource.initialize()
 
         // Users API
         app.get("/api/users", async (req, res) => {
-            const users = await AppDataSource.getRepository(User).find();
-            res.json(users);
+            try {
+                const users = await AppDataSource.getRepository(User).find({
+                    relations: {
+                        albums: true
+                    }
+                });
+                // Return users with their albums
+                res.json(users);
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
         });
 
         app.get('/api/users/:id', async (req, res) => {
-            const user = await AppDataSource.getRepository(User).findOneBy({ id: parseInt(req.params.id) });
+            const user = await AppDataSource.getRepository(User).find({
+                where: [{ id: parseInt(req.params.id) }],
+                relations: {
+                    albums: true
+                }
+            });
+
             if(user) res.json(user);
             else res.status(404).json({ message: 'User not found' });
-        });
+        })
 
         // Albums API
         app.get("/api/albums", async (req, res) => {
-            const albums = await AppDataSource.getRepository(Album).find();
+            const albums = await AppDataSource.getRepository(Album).find({
+                relations: {
+                    user: true,
+                    photos: true
+                }
+            });
             res.json(albums);
         });
 
         app.get('/api/albums/:id', async (req, res) => {
-            const album = await AppDataSource.getRepository(Album).findOneBy({ id: parseInt(req.params.id) });
+            const album = await AppDataSource.getRepository(Album).findOne({
+                where: [{ id: parseInt(req.params.id) }],
+                relations: {
+                    user: true,
+                    photos: true
+                }
+            });
             if(album) res.json(album);
             else res.status(404).json({ message: 'Album not found' });
         });
 
-        app.get('/api/albums/user/:userId', async (req, res) => {
-            const albums = await AppDataSource.getRepository(Album).findBy({ userId: parseInt(req.params.userId) });
-            res.json(albums);
-        });
-
         // Photos API
         app.get("/api/photos", async (req, res) => {
-            const photos = await AppDataSource.getRepository(Photo).find();
+            const photos = await AppDataSource.getRepository(Photo).find({
+                relations: {
+                    album: true
+                }
+            });
             res.json(photos);
         });
 
         app.get('/api/photos/:id', async (req, res) => {
-            const photo = await AppDataSource.getRepository(Photo).findOneBy({ id: parseInt(req.params.id) });
+            const photo = await AppDataSource.getRepository(Photo).find({
+                where: [{ id: parseInt(req.params.id) }],
+                relations: {
+                    album: true
+                }
+            });
             if(photo) res.json(photo);
             else res.status(404).json({ message: 'Photo not found' });
-        });
-
-        app.get('/api/photos/album/:albumId', async (req, res) => {
-            const photos = await AppDataSource.getRepository(Photo).findBy({ albumId: parseInt(req.params.albumId) });
-            res.json(photos);
         });
 
 
@@ -92,12 +117,12 @@ const seedDB = async () => {
     const albumRepo = AppDataSource.getRepository(Album);
     const photoRepo = AppDataSource.getRepository(Photo);
 
-    const userCount = await userRepo.count();
-    if(userCount > 0) return; // Already seeded DB
+    //const userCount = await userRepo.count();
+    //if(userCount > 0) return; // Already seeded DB
     console.log('❗Seeding DB...');
 
     // Create 10 Users
-    const users = [];
+    const users: User[] = [];
     for (let i = 0; i < 10; i++) {
         const user = new User();
         user.name = faker.person.fullName();
@@ -113,18 +138,13 @@ const seedDB = async () => {
             const album = new Album();
             album.title = faker.lorem.words();
             album.user = user;
-            album.userId = user.id;
             const savedAlbum = await albumRepo.save(album);
 
-            const photoCount = faker.number.int({ min: 5, max: 10 });
-            for (let j = 0; j < photoCount; j++) {
-                const photo = new Photo();
-                photo.title = faker.lorem.words();
-                photo.url = faker.image.url();
-                photo.album = savedAlbum;
-                photo.albumId = savedAlbum.id;
-                await photoRepo.save(photo);
-            }
+            const photo = new Photo();
+            photo.title = faker.lorem.words();
+            photo.url = faker.image.url();
+            photo.album = savedAlbum;
+            await photoRepo.save(photo);
         }
     }
 

@@ -1,15 +1,21 @@
 import React from 'react';
 
 interface CardProps {
-    title?: string;
-    description?: string;
-    onClick?: () => void;
+    title: string;
+    description: string;
+    onClick: () => void;
     showButton: boolean;
+    imageUrl: string;
 }
 
-const Card: React.FC<CardProps> = ({ title, description, onClick, showButton }) => {
+const Card: React.FC<CardProps> = ({ title, description, onClick, showButton = false, imageUrl = "" }) => {
     return (
         <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            {imageUrl.length > 0 ? (
+                <a href="#">
+                    <img className="rounded-t-lg album-photo" src={imageUrl} alt={title} />
+                </a>
+            ) : ("")}
             <div className="p-5">
                 <a href="#">
                     <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h5>

@@ -5,11 +5,7 @@ import { useRouter } from "next/navigation";
 import { fetchAlbums } from "@/app/services/albumService";
 import Loader from "@/app/components/Loader";
 import Card from "@/app/components/Card";
-
-interface Album {
-    id: string;
-    title: string;
-}
+import { Album } from "@/app/types";
 
 export default function AlbumPage() {
     const [albums, setAlbums] = useState<Album[]>([]);
@@ -34,9 +30,10 @@ export default function AlbumPage() {
                     <Card
                         key={album.id}
                         title={album.title}
-                        description={`Albums: 5`}
+                        description={`User: ${album.user.name}`}
                         onClick={() => router.push(`/album/${album.id}`)}
                         showButton={true}
+                        imageUrl={album.photos[0].url}
                     />
                 ))}
             </div>

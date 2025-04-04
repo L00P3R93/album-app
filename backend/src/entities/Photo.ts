@@ -13,9 +13,9 @@ export class Photo {
     url!: string;
 
     @ManyToOne(() => Album, (album) => album.photos)
-    @JoinColumn({ name: 'albumId' })
+    @JoinColumn({ name: 'album_id' })
     album!: Album;
 
     @Column('integer')
-    albumId!: number
+    album_id!: number
 }

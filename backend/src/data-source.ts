@@ -9,9 +9,10 @@ export const AppDataSource = new DataSource({
     port: Number(process.env.DB_PORT) || 5432,
     username: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "postgres",
-    database: process.env.DB_NAME || "photo_album",
+    database: process.env.DB_NAME || "album_photo",
+    dropSchema: true,
     synchronize: true,
-    logging: false,
+    //logging: true,
     entities: [Photo, User, Album],
     subscribers: [],
     migrations: []
