@@ -1,5 +1,5 @@
 export interface User {
-    id: string;
+    id: number;  // Changed from string to number
     name: string;
     email: string;
     username: string;
@@ -7,14 +7,24 @@ export interface User {
 }
 
 export interface Photo {
-    id: string;
+    id: number;
     title: string;
     url: string;
+    album_id: number;  // Foreign Key to album
+    album?: Album; // Relation back to album
 }
 
 export interface Album {
-    id: string;
+    id: number;
     title: string;
-    user: User;
-    photos: Photo;
+    user_id: number;  // Foreign Key to user
+    user?: User; // Relation back to user
+    photo_id?: number; // Foreign Key to photo
+    photo: Photo;  // 1 - 1 relationship
+}
+
+export interface ApiResponse<T> {
+    data?: T;
+    error?: string;
+    message?: string;
 }

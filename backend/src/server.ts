@@ -6,7 +6,7 @@ import {AppDataSource} from "./data-source";
 import {Photo} from "./entities/Photo";
 import {User} from "./entities/User";
 import {Album} from "./entities/Album";
-import { faker } from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 
 const app = express();
 const PORT = 5000;
@@ -39,10 +39,12 @@ AppDataSource.initialize()
         });
 
         app.get('/api/users/:id', async (req, res) => {
-            const user = await AppDataSource.getRepository(User).find({
-                where: [{ id: parseInt(req.params.id) }],
+            const user = await AppDataSource.getRepository(User).findOne({
+                where: { id: parseInt(req.params.id) },
                 relations: {
-                    albums: true
+                    albums: {
+                        photo: true
+                    }
                 }
             });
 
@@ -52,46 +54,66 @@ AppDataSource.initialize()
 
         // Albums API
         app.get("/api/albums", async (req, res) => {
-            const albums = await AppDataSource.getRepository(Album).find({
-                relations: {
-                    user: true,
-                    photos: true
-                }
-            });
-            res.json(albums);
+            try {
+                const albums = await AppDataSource.getRepository(Album).find({
+                    relations: {
+                        user: true,
+                        photo: true  // Changed from photos to photo
+                    }
+                });
+                res.json(albums);
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
         });
 
         app.get('/api/albums/:id', async (req, res) => {
-            const album = await AppDataSource.getRepository(Album).findOne({
-                where: [{ id: parseInt(req.params.id) }],
-                relations: {
-                    user: true,
-                    photos: true
-                }
-            });
-            if(album) res.json(album);
-            else res.status(404).json({ message: 'Album not found' });
+            try {
+                const album = await AppDataSource.getRepository(Album).findOne({
+                    where: { id: parseInt(req.params.id) },
+                    relations: {
+                        user: true,
+                        photo: true  // Changed from photos to photo
+                    }
+                });
+                if (album) res.json(album);
+                else res.status(404).json({ message: 'Album not found' });
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
         });
 
         // Photos API
         app.get("/api/photos", async (req, res) => {
-            const photos = await AppDataSource.getRepository(Photo).find({
-                relations: {
-                    album: true
-                }
-            });
-            res.json(photos);
+            try {
+                const photos = await AppDataSource.getRepository(Photo).find({
+                    relations: {
+                        album: true
+                    }
+                });
+                res.json(photos);
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
         });
 
         app.get('/api/photos/:id', async (req, res) => {
-            const photo = await AppDataSource.getRepository(Photo).find({
-                where: [{ id: parseInt(req.params.id) }],
-                relations: {
-                    album: true
-                }
-            });
-            if(photo) res.json(photo);
-            else res.status(404).json({ message: 'Photo not found' });
+            try {
+                const photo = await AppDataSource.getRepository(Photo).findOne({
+                    where: { id: parseInt(req.params.id) },
+                    relations: {
+                        album: true
+                    }
+                });
+                if (photo) res.json(photo);
+                else res.status(404).json({ message: 'Photo not found' });
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
         });
 
 
@@ -138,13 +160,19 @@ const seedDB = async () => {
             const album = new Album();
             album.title = faker.lorem.words();
             album.user = user;
-            const savedAlbum = await albumRepo.save(album);
 
+            // Create and associate photo
             const photo = new Photo();
             photo.title = faker.lorem.words();
             photo.url = faker.image.url();
+
+            // Save album first to get ID
+            const savedAlbum = await albumRepo.save(album);
             photo.album = savedAlbum;
-            await photoRepo.save(photo);
+
+            // Save photo and associate with album
+            savedAlbum.photo = await photoRepo.save(photo);
+            await albumRepo.save(savedAlbum);
         }
     }
 

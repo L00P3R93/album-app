@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { Photo } from './Photo';
 
@@ -17,6 +17,10 @@ export class Album {
     @Column('integer')
     user_id!: number;
 
-    @OneToMany(() => Photo, (photo) => photo.album, { cascade: true })
-    photos!: Photo[];
+    @OneToOne(() => Photo, (photo) => photo.album, { cascade: true })
+    @JoinColumn({ name: 'photo_id' })
+    photo!: Photo;
+
+    @Column('integer', { nullable: true })
+    photo_id!: number;
 }

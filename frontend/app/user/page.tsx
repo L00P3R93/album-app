@@ -11,17 +11,30 @@ import Loader from "@/app/components/Loader";
 export default function UsersPage() {
     const [users, setUsers] = useState<User[] | []>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
     const router = useRouter();
 
     useEffect(() => {
-        fetchUsers().then((users) => {
-            setUsers(users);
-            setLoading(false);
-        });
+        const loadUsers = async () => {
+            try{
+                const { data, error } = await fetchUsers();
+                if (error) throw new Error(error);
+                if(!data) throw new Error('Users not found!')
+                setUsers(data);
+            }catch (error) {
+                console.error("Error fetching users:", error);
+                setError(error instanceof Error ? error.message : 'Failed to fetch users!')
+            }finally {
+                setLoading(false);
+            }
+        };
+        loadUsers();
+    }, []);
 
-    }, [fetchUsers]);
-
-    if(loading) return <Loader />;
+    if (loading) return <Loader />;
+    if (error) return <div className="p-20 text-red-500">{error}</div>;
+    if (!users) return <div className="p-20">Users not found</div>;
 
     return (
         <div className="p-20">
