@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchUsers } from "@/app/services/userService";
 
@@ -20,7 +20,7 @@ export default function UsersPage() {
             try{
                 const { data, error } = await fetchUsers();
                 if (error) throw new Error(error);
-                if(!data) throw new Error('Users not found!')
+                if (!data) throw new Error('Users not found!')
                 setUsers(data);
             }catch (error) {
                 console.error("Error fetching users:", error);
