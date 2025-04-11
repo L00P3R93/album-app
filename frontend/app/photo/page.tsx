@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { fetchPhotos } from "@/app/services/photoService";
 import Loader from "@/app/components/Loader";
 import Card from "@/app/components/Card";
-import {Photo, User} from "@/app/types";
+import { Photo } from "@/app/types";
 
 
 const PhotoPage = () => {
@@ -38,7 +38,7 @@ const PhotoPage = () => {
     if(!photos) return <div className="p-20">Photos not found</div>;
 
     return (
-        <div className="p-20">
+        <div className="mt-20 p-4">
             <h1 className="text-2xl font-bold">Photos</h1>
             <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {photos.map((photo: Photo) => (

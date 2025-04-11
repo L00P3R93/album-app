@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { Photo, ApiResponse  } from "@/app/types";
 
-const API_URL = "http://localhost:5000/api/photos";
+const API_URL = "https://album-app-backend-fa1be23e8121.herokuapp.com/api/photos";
 
 export const fetchPhotos = async () : Promise<ApiResponse<Photo[]>> => {
     try{

@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { Album, ApiResponse } from "@/app/types";
 
-const API_URL = "http://localhost:5000/api/albums";
+const API_URL = "https://album-app-backend-fa1be23e8121.herokuapp.com/api/albums";
 
 export const fetchAlbums = async (): Promise<ApiResponse<Album[]>> => {
     try{
