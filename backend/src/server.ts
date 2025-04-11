@@ -122,9 +122,16 @@ AppDataSource.initialize()
 
 
         // @ts-ignore
-        app.put('/api/photos/:id', async (req, res) => {
+        app.patch('/api/photos/:id', async (req, res) => {
             const photoRepo = AppDataSource.getRepository(Photo);
-            const photo = await photoRepo.findOneBy({ id: parseInt(req.params.id) });
+            const photo = await AppDataSource.getRepository(Photo).findOne({
+                where: { id: parseInt(req.params.id) },
+                relations: {
+                    album: {
+                        user: true
+                    }
+                }
+            });
             if(!photo) return res.status(404).json({ message: 'Photo not found' });
             photo.title = req.body.title;
             photo.url = req.body.url;

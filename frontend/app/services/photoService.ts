@@ -23,3 +23,13 @@ export const fetchPhoto = async (id: number) : Promise<ApiResponse<Photo>> => {
         return { error: error instanceof Error ? error.message: 'Failed to fetch photo!' }
     }
 }
+
+export const updatePhoto = async (id: number, updates: { title?: string; url?: string }) : Promise<ApiResponse<Photo>> => {
+    try {
+        const response = await axios.patch(`${API_URL}/${id}`, updates);
+        return { data: response.data };
+    } catch (error) {
+        console.error('Error updating photo:', error);
+        return { error: error instanceof Error ? error.message: 'Failed to update photo!' }
+    }
+}
